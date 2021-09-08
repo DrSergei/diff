@@ -1,15 +1,14 @@
+import java.io.*
 
-import java.util.*
+// Строит таблицу для рассчета расстаяния Леванштейна через рекуррентную формулу,
+// рассчитывая все с учетом стоимости каждой операции(добавить возможность корректирования стоимости операции)
 
-import kotlin.math.*
-
-// строит таблицу для рассчета расстаяния Леванштейна через рекуррентную формулу
-fun createTable(str1 : String, str2 : String) : Array<Array<Int>> {
-    val table: Array<Array<Int>> = Array(str1.length + 1, { Array(str2.length + 1, {it})})
-    for (i in 0..str1.length)
+fun createTable(str1 : List<String>, str2 : List<String>) : Array<Array<Int>> {
+    val table: Array<Array<Int>> = Array(str1.size + 1) { Array(str2.size + 1) { it } }
+    for (i in 0..str1.size)
         table[i][0] = i
-    for (row in 1..str1.length) {
-        for (column in 1..str2.length) {
+    for (row in 1..str1.size) {
+        for (column in 1..str2.size) {
             //Рассмотрение случая совпадения значений или нет т.к. у нас нет замена, а только вставки и удаления
             if (str1[row - 1] == str2[column - 1]) {
                 table[row][column] = minOf(table[row - 1][column] + 1,table[row][column - 1] + 1, table[row - 1][column - 1])
@@ -22,75 +21,121 @@ fun createTable(str1 : String, str2 : String) : Array<Array<Int>> {
 }
 
 // построение пути(редакционного предписания)
-fun createPath(table : Array<Array<Int>>, str1: String, str2: String) : String {
-    var row = str1.length
-    var column = str2.length
-    var result = ""
+// смотрит с конца на состояние с учетом цен
+fun createPath(table : Array<Array<Int>>, str1: List<String>, str2: List<String>) : List<String> {
+    var row = str1.size
+    var column = str2.size
+    val result = mutableListOf("")
     while ((row != 0) && (column != 0)) {
         //Рассмотрение случая совпадения значений или нет т.к. у нас нет замена, а только вставки и удаления
         if (str1[row - 1] == str2[column - 1]) {
-            if (table[row - 1][column] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1])) {
-                result += "d"
-                row--;
-            } else if (table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1])) {
-                result += "i"
-                column--;
+            if (table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1])) {
+                result.add("insert ${str2[column - 1]} \n")
+                column--
+            } else if (table[row - 1][column] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1])) {
+                result.add("delete ${str1[row - 1]} \n")
+                row--
             } else {
-                result += "m"
-                row--;
-                column--;
+                result.add("match ${str1[row - 1]} \n")
+                row--
+                column--
             }
         } else {
-            if (table[row - 1][column] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1)) {
-                result += "d"
-                row--;
+            if (table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1)) {
+                result.add("insert ${str2[column - 1]} \n")
+                column--
             } else {
-                result += "i"
-                column--;
+                result.add("delete ${str1[row - 1]} \n")
+                row--
             }
         }
     }
     if (row == 0) {
         while (column != 0) {
-            result += "i"
-            column--;
+            result.add("insert ${str2[column - 1]} \n")
+            column--
         }
-        return result
+        return result.reversed() // так как с конца надо развернуть
     }
     if (column == 0) {
         while (row != 0) {
-            result += "d"
-            row--;
+            result.add("delete ${str1[row - 1]} \n")
+            row--
         }
-        return result
+        return result.reversed() // так как с конца надо развернуть
     }
-    return "";
+    return emptyList()
 }
 
 //главная функция сравнения (надо дописать расшифровку редакционного предписания)
-fun diff(file1 : String, file2 : String) {
+fun diff(file1 : List<String>, file2 : List<String>) {
     val buf = createPath(createTable(file1, file2), file1, file2)
-    print(buf)
+    print(buf.joinToString(""))
 }
 
+fun inputCommandLine(args: Array<String>) {
+    println("Командная строка")
+    if (args.size != 2) {
+        print("Неверное число аргументов")
+    } else {
+        val pathFile1 = args[0]
+        val pathFile2 = args[1]
+        val file1 = File(pathFile1)
+        val file2 = File(pathFile2)
+        if (!file1.exists()) {
+            println("Нет файла $pathFile1")
+            return
+        }
+        if (file1.extension != "txt") {
+            println("$pathFile1 не текстовый файл")
+            return
+        }
+        if (!file2.exists()) {
+            println("Нет файла $pathFile2")
+            return
+        }
+        if (file2.extension != "txt") {
+            println("$pathFile2 не текстовый файл")
+            return
+        }
+        val textFile1 = file1.readLines()
+        val textFile2 = file2.readLines()
+        diff(textFile1, textFile2)
+    }
+}
 
+fun inputConsole() {
+    println("Консоль")
+    val pathFile1 = readLine()!! //обязательно строка
+    val pathFile2 = readLine()!! //обязательно строка
+    val file1 = File(pathFile1)
+    val file2 = File(pathFile2)
+    if (!file1.exists()) {
+        println("Нет файла $pathFile1")
+        return
+    }
+    if (file1.extension != "txt") {
+        println("$pathFile1 не текстовый файл")
+        return
+    }
+    if (!file2.exists()) {
+        println("Нет файла $pathFile2")
+        return
+    }
+    if (file2.extension != "txt") {
+        println("$pathFile2 не текстовый файл")
+        return
+    }
+    val textFile1 = file1.readLines()
+    val textFile2 = file2.readLines()
+    diff(textFile1, textFile2)
+}
 fun main(args: Array<String>) {
 
     // Работа с командной строкой или консолью.
-    //Сделать работу с файлами, а не строками
     if(args.isNotEmpty()) {
-        println("Командная строка")
-        if (args.size != 2) {
-            print("Неверное число аргументов")
-        } else {
-            val file1 = args[0]
-            val file2 = args[1]
-            diff(file1, file2)
-        }
+        inputCommandLine(args)
     } else {
-        println("Консоль")
-        val file1 = readLine()!!
-        val file2 = readLine()!!
-        diff(file1, file2)
+        inputConsole()
     }
 }

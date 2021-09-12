@@ -1,15 +1,20 @@
 // Стандартная библиотека
 
 // Собственные пакеты
-import frontend.parser
+import frontend.parser1
+import java.lang.Exception
 
 fun main(args: Array<String>) {
-    if (parser(args)) {
-        print("хорошечно")
-        //что то
+    try {
+        if (parser1(args)) {
+            print("хорошечно")
+            //что то
 
-    } else {
-        print("не хорошечно")
-        //что то
+        } else {
+            print("не хорошечно")
+            //что то
+        }
+    } catch (e : Exception) {
+        println("Что - то пошло не так")
     }
 }

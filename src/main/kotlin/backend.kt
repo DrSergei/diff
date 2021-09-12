@@ -4,6 +4,11 @@ package backend
 
 // Собственные пакеты
 
+// Стили вывода
+const val ANSI_RESET = "\u001B[0m"
+const val ANSI_RED = "\u001B[31m"
+const val ANSI_GREEN = "\u001B[32m"
+
 // Данные
 data class FastString(val data : String, val hash : Int)
 
@@ -15,7 +20,6 @@ fun equals(str1 : FastString, str2 : FastString) : Boolean {
         return str1.data == str2.data
     }
 }
-
 
 // Строит таблицу для рассчета расстаяния Леванштейна через рекуррентную формулу,
 // рассчитывая все с учетом стоимости каждой операции(добавить возможность корректирования стоимости операции)
@@ -38,6 +42,7 @@ fun createTable(textFile1 : MutableList<FastString>, textFile2 : MutableList<Fas
 
 // построение пути(редакционного предписания)
 // смотрит с конца на состояние с учетом цен
+// с учетом того что замены быть не может
 fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<FastString>, textFile2 : MutableList<FastString>) : List<String> {
     var row = textFile1.size
     var column = textFile2.size
@@ -47,11 +52,11 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
         if (equals(textFile1[row - 1], textFile2[column - 1])) {
             when {
                 table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1]) -> {
-                    result.add("++ ${textFile2[column - 1].data} \n")
+                    result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
                     column--
                 }
                 table[row - 1][column] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1]) -> {
-                    result.add("-- ${textFile1[row - 1].data} \n")
+                    result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
                     row--
                 }
                 else -> {
@@ -63,11 +68,11 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
         } else {
             when {
                 table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1) -> {
-                    result.add("++ ${textFile2[column - 1].data} \n")
+                    result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
                     column--
                 }
                 else -> {
-                    result.add("-- ${textFile1[row - 1].data} \n")
+                    result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
                     row--
                 }
             }
@@ -75,14 +80,14 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
     }
     if (row == 0) {
         while (column != 0) {
-            result.add("++ ${textFile2[column - 1].data} \n")
+            result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
             column--
         }
         return result.reversed() // так как с конца надо развернуть
     }
     if (column == 0) {
         while (row != 0) {
-            result.add("-- ${textFile1[row - 1].data} \n")
+            result.add(ANSI_GREEN + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
             row--
         }
         return result.reversed() // так как с конца надо развернуть
@@ -92,6 +97,19 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
 
 //главная функция сравнения (надо дописать расшифровку редакционного предписания)
 fun diff(file1 : MutableList<FastString>, file2 :MutableList<FastString>) : String {
-    val buf = createPath(createTable(file1, file2), file1, file2)
+    val buf = try {
+         createPath(createTable(file1, file2), file1, file2)
+    } catch (e : Exception) {
+        println("Что - то пошло не так")
+        return ""
+    }
     return buf.joinToString("")
+}
+
+fun diffFast(file1 : MutableList<FastString>, file2 :MutableList<FastString>) : Boolean {
+    if (file1.size == file2.size) {
+        return file1 == file2
+    } else {
+        return false
+    }
 }

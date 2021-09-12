@@ -1,11 +1,10 @@
 package frontend
 
 // Стандартная библиотека
-import java.io.*
-
+import backend.*
+import java.io.File
 
 // Собственные пакеты
-import backend.*
 
 // Проверка адекватности переданного файла
 fun checkFile(file : File) : Boolean {
@@ -17,9 +16,14 @@ fun checkFile(file : File) : Boolean {
         println("${file.name} не текстовый файл")
         return false
     }
+    if (!file.canRead()) {
+        println("${file.name} не может быть прочитан")
+        return false
+    }
     return true
 }
 
+// Считывает строки из файла
 fun dataFile(file : File) : MutableList<FastString> {
     val textFile = MutableList(0) { FastString("", "".hashCode()) }
     for (line in file.readLines()) {
@@ -29,47 +33,51 @@ fun dataFile(file : File) : MutableList<FastString> {
 }
 
 //Ввод имен файлов сравнения через аргументы командной строки
-fun inputCommandLine(args: Array<String>) : Boolean{
-    val pathFile1 = args[0]
-    val pathFile2 = args[1]
+fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String) : Boolean{
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
-        println("-- " + file1.name)
-        println("++ " + file2.name)
+        println(ANSI_RED + "-- " + file1.name + ANSI_RESET)
+        println(ANSI_GREEN + "++ " + file2.name + ANSI_RESET)
         println()
         val textFile1 = dataFile(file1)
         val textFile2 = dataFile(file2)
-        print(diff(textFile1, textFile2))
+        if (brief)
+            print(diffFast(textFile1, textFile2))
+        else
+            print(diff(textFile1, textFile2))
         return true
     } else
         return false
 }
 
 //Ввод имен файлов сравнения из консоли
-fun inputConsole() : Boolean {
+fun inputConsole(brief : Boolean) : Boolean {
     val pathFile1 = readLine()!! //обязательно строка
     val pathFile2 = readLine()!! //обязательно строка
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
-        println("-- " + file1.name)
-        println("++ " + file2.name)
+        println(ANSI_RED + "-- " + file1.name + ANSI_RESET)
+        println(ANSI_GREEN + "++ " + file2.name + ANSI_RESET)
         println()
         val textFile1 = dataFile(file1)
         val textFile2 = dataFile(file2)
-        print(diff(textFile1, textFile2))
+        if (brief)
+            print(diffFast(textFile1, textFile2))
+        else
+            print(diff(textFile1, textFile2))
         return true
     } else
         return false
 }
 
 // Если вкратце, то файл читается построчно. В каждой строке должны быть аргументы командной строки.
-fun inputFile(args: Array<String>) : Boolean{
-    val buf = File(args[1])
+fun inputFile(pathFile : String) : Boolean{
+    val buf = File(pathFile)
     if (checkFile(buf)) {
         for(line in buf.readLines()) {
-            if (!parser(line.split(" ") as Array<String>)) {
+            if (!parser1(line.split(" ") as Array<String>)) {
                 return false
             }
         }
@@ -79,37 +87,142 @@ fun inputFile(args: Array<String>) : Boolean{
     return true
 }
 
+// Перечисления сценариев ввода и вывода для парсера
+enum class Input {
+    NULL, FILE, COMMANDLINE, CONSOLE
+}
+
+enum class Output {
+    NULL, HELP, BRIEF, DIFF
+}
+
 //Разбирает аргументы командной строки и реализует выбор дальнейшего сценария работы
-fun parser(args: Array<String>) : Boolean {
-    if(args.isNotEmpty()) {
-        if (args.size == 1) {
-            if ((args[0] == "-h") || (args[0] == "--help")) {
-                println("Справка")
-                println("Утилита предоставляет возможность построчного сравнение двух текствовых файлов")
-                println("Работа с командной строкой")
-                println(" \"\" работа в интерактивном режиме")
-                println(" \"file1\" \"file2\" сравнение введенных файлов")
-                println(" \"-f или --file\" \"file\" использует каждую строчку в файле как аргументы командной строки")
-                println(" \"-h или --help\" вызывает справку")
-                //TODO("Написать нормальную справку")
-                return true
-            } else {
-                println("Неверные аргументы командной строки")
+fun parser1(args : Array<String>) : Boolean {
+    var input = Input.COMMANDLINE
+    var output = Output.DIFF
+    //val trim : String.() -> String = {  this.trim() }
+    //val ignore : String.() -> String = {  this.toLowerCase() }
+    //var option = MutableList<String.() -> String>(0) {trim}
+    var pathFile1 = ""
+    var pathFile2 = ""
+    for (index in args.indices) {
+        when (args[index]) {
+            "--" -> {
+                if (index + 2 < args.size) {
+                    pathFile1 = args[index + 1]
+                    pathFile2 = args[index + 2]
+                } else if (index + 1 < args.size) {
+                    pathFile1 = args[index + 1]
+                }
+                break
+            }
+            "-h" -> {
+                if (output == Output.DIFF && input == Input.COMMANDLINE) {
+                    output = Output.HELP
+                    input = Input.NULL
+                }
+                else
+                    return false
+            }
+            "--help" -> {
+                if (output == Output.DIFF && input == Input.COMMANDLINE) {
+                    output = Output.HELP
+                    input = Input.NULL
+                }
+                else
+                    return false
+            }
+            "-q" -> {
+                if (output == Output.DIFF && input != Input.NULL)
+                    output = Output.BRIEF
+                else
+                    return false
+            }
+            "--brief" -> {
+                if (output == Output.DIFF && input != Input.NULL)
+                    output = Output.BRIEF
+                else
+                    return false
+            }
+            "-f" -> {
+                if (input == Input.COMMANDLINE && output == Output.DIFF) {
+                    input = Input.FILE
+                    output = Output.NULL
+                }
+                else
+                    return false
+            }
+            "--file" -> {
+                if (input == Input.COMMANDLINE && output == Output.DIFF) {
+                    input = Input.FILE
+                    output = Output.NULL
+                }
+                else
+                    return false
+            }
+            "-c" -> {
+                if (input == Input.COMMANDLINE && output != Output.HELP)
+                    input = Input.CONSOLE
+                else
+                    return false
+            }
+            "--console" -> {
+                if (input == Input.COMMANDLINE && output != Output.HELP)
+                    input = Input.CONSOLE
+                else
+                    return false
+            }
+            else -> {
+                println("Неверный аргумент ${args[index]}")
                 return false
             }
         }
-        else if (args.size == 2) {
-            if ((args[0] == "-f") || (args[0] == "--file"))
-                return inputFile(args)
-            else
-                return inputCommandLine(args)
-
-        }
-        else {
-            println("Неверные аргументы командной строки")
-            return false
-        }
-    } else {
-        return inputConsole()
     }
+    when (input) {
+        Input.NULL -> {
+            println("Справка")
+        }
+        Input.CONSOLE -> {
+            when (output) {
+                Output.HELP -> {
+                    return false
+                }
+                Output.BRIEF -> {
+                    inputConsole(true)
+                }
+                Output.DIFF -> {
+                    inputConsole(false)
+                }
+            }
+        }
+        Input.COMMANDLINE ->{
+            when (output) {
+                Output.HELP -> {
+                    return false
+                }
+                Output.BRIEF -> {
+                    inputCommandLine(true, pathFile1, pathFile2)
+                }
+                Output.DIFF -> {
+                    inputCommandLine(false, pathFile1, pathFile2)
+                }
+            }
+        }
+        Input.FILE -> {
+            when (output) {
+                Output.HELP -> {
+                    return false
+                }
+                Output.BRIEF -> {
+                    return false
+                }
+                Output.DIFF -> {
+                    inputFile(pathFile1)
+                }
+            }
+        }
+    }
+    return true
 }
+
+

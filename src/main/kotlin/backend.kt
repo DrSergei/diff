@@ -87,7 +87,7 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
     }
     if (column == 0) {
         while (row != 0) {
-            result.add(ANSI_GREEN + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
+            result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
             row--
         }
         return result.reversed() // так как с конца надо развернуть
@@ -96,19 +96,19 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
 }
 
 //главная функция сравнения (надо дописать расшифровку редакционного предписания)
-fun diff(file1 : MutableList<FastString>, file2 :MutableList<FastString>) : String {
+fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     val buf = try {
-         createPath(createTable(file1, file2), file1, file2)
+         createPath(createTable(textFile1, textFile2), textFile1, textFile2)
     } catch (e : Exception) {
-        println("Что - то пошло не так")
+        println("Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти")
         return ""
     }
     return buf.joinToString("")
 }
 
-fun diffFast(file1 : MutableList<FastString>, file2 :MutableList<FastString>) : Boolean {
-    if (file1.size == file2.size) {
-        return file1 == file2
+fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : Boolean {
+    if (textFile1.size == textFile2.size) {
+        return textFile1 == textFile2
     } else {
         return false
     }

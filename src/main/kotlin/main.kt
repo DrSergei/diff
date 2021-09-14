@@ -6,15 +6,8 @@ import java.lang.Exception
 
 fun main(args: Array<String>) {
     try {
-        if (parser1(args)) {
-            print("хорошечно")
-            //что то
-
-        } else {
-            print("не хорошечно")
-            //что то
-        }
+        parser1(args)
     } catch (e : Exception) {
-        println("Что - то пошло не так")
+        println("Посмотрите сообщения об ошибках, попробуйте перезапустить программу")
     }
 }

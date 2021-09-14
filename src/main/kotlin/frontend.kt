@@ -181,6 +181,13 @@ fun parser1(args : Array<String>) : Boolean {
     when (input) {
         Input.NULL -> {
             println("Справка")
+            println("Ключи -h или --help вызов справки")
+            println("Ключи -q или --brief быстрая проверка на совпадение")
+            println("Ключи -f или --file ввод аргументов командной строки из файла")
+            println("Ключи -c или --console ввод файлов из консоли")
+            println("Ключ -- конец ввода опций")
+            println("Утилита предназначена для сравнения двух текстовых файлов")
+
         }
         Input.CONSOLE -> {
             when (output) {
@@ -192,6 +199,9 @@ fun parser1(args : Array<String>) : Boolean {
                 }
                 Output.DIFF -> {
                     inputConsole(false)
+                }
+                Output.NULL -> {
+                    return false
                 }
             }
         }
@@ -206,6 +216,9 @@ fun parser1(args : Array<String>) : Boolean {
                 Output.DIFF -> {
                     inputCommandLine(false, pathFile1, pathFile2)
                 }
+                Output.NULL -> {
+                    return false
+                }
             }
         }
         Input.FILE -> {
@@ -217,6 +230,9 @@ fun parser1(args : Array<String>) : Boolean {
                     return false
                 }
                 Output.DIFF -> {
+                    return false
+                }
+                Output.NULL -> {
                     inputFile(pathFile1)
                 }
             }

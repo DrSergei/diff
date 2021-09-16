@@ -1,0 +1,3 @@
+-q --ignore -- text\demo\inputFirst.txt text\demo\inputSecond.txt
+-q -- text\demo\inputFirst.txt text\demo\inputSecond.txt
+-- text\demo\inputFirst.txt text\demo\inputSecond.txt

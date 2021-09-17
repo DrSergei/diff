@@ -64,21 +64,26 @@ fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, op
 
 // Ввод имен файлов сравнения из консоли.
 fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : Boolean {
-    val pathFile1 = readLine()!! //обязательно строка
-    val pathFile2 = readLine()!! //обязательно строка
-    val file1 = File(pathFile1)
-    val file2 = File(pathFile2)
-    if (checkFile(file1) && checkFile(file2)) {
-        message(file1, file2)
-        val textFile1 = dataFile(file1, options)
-        val textFile2 = dataFile(file2, options)
-        if (brief)
-            println(diffFast(textFile1, textFile2))
-        else
-            println(diff(textFile1, textFile2))
-        return true
-    } else
+    val pathFile1 = readLine()
+    val pathFile2 = readLine()
+    if (pathFile1 != null && pathFile2 != null) {
+        val file1 = File(pathFile1)
+        val file2 = File(pathFile2)
+        if (checkFile(file1) && checkFile(file2)) {
+            message(file1, file2)
+            val textFile1 = dataFile(file1, options)
+            val textFile2 = dataFile(file2, options)
+            if (brief)
+                println(diffFast(textFile1, textFile2))
+            else
+                println(diff(textFile1, textFile2))
+            return true
+        } else
+            return false
+    } else {
+        println("Не получены пути до файлов")
         return false
+    }
 }
 
 // Обрабатывает каждую строку файла, как аргументы командной строки.
@@ -87,12 +92,8 @@ fun inputFile(pathFile : String) : Boolean{
     if (checkFile(buf)) {
         // Построчно запускает парсер.
         for(line in buf.readLines()) {
-            var args = Array(0) {""}
-            for (key in line.split(" "))
-                args += key
-            if (!parser(args)) {
+            if (!parser(line.split(" ")))
                 return false
-            }
         }
     } else
         return false

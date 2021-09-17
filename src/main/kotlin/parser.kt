@@ -20,7 +20,7 @@ val space : String.() -> String = {  this.trim() }
 val ignore : String.() -> String = {  this.toLowerCase() }
 
 // Разбирает аргументы командной строки и реализует выбор дальнейшего сценария работы.
-fun parser(args : Array<String>) : Boolean {
+fun parser(args : List<String>) : Boolean {
     // вход и выход по умолчанию
     var input = Input.COMMANDLINE
     var output = Output.DIFF

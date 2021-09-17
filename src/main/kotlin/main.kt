@@ -10,7 +10,7 @@ import parser.*
 fun main(args: Array<String>) {
     val time = measureTimeMillis {
         try {
-            if (!parser(args))
+            if (!parser(args.toList()))
                 print("Попробуйте переписать аргументы")
         } catch (e : Exception) {
             println("Посмотрите сообщения об ошибках, попробуйте перезапустить программу")

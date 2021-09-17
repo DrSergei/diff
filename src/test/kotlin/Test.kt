@@ -13,16 +13,16 @@ internal class TestParser {
 
     @Test
     fun testparser() {
-        assertEquals(false, parser(arrayOf("-f", "--brief", "--help", "--", "text\\test\\1.txt")))
-        assertEquals(true, parser(arrayOf("-h", "--",)))
-        assertEquals(true, parser(arrayOf("--brief", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(arrayOf("--file", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(false, parser(arrayOf("--help", "-i", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(arrayOf("--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(arrayOf("-q", "--space","--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(arrayOf("--ignore", "-s", "-q", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(false, parser(arrayOf("-f", "-help", "--", "text\\test\\1.txt", "text\\test\\3.txt")))
-        assertEquals(false, parser(arrayOf("-h", "--help", "--")))
+        assertEquals(false, parser(listOf("-f", "--brief", "--help", "--", "text\\test\\1.txt")))
+        assertEquals(true, parser(listOf("-h", "--",)))
+        assertEquals(true, parser(listOf("--brief", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(true, parser(listOf("--file", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(false, parser(listOf("--help", "-i", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(true, parser(listOf("--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(true, parser(listOf("-q", "--space","--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(true, parser(listOf("--ignore", "-s", "-q", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
+        assertEquals(false, parser(listOf("-f", "-help", "--", "text\\test\\1.txt", "text\\test\\3.txt")))
+        assertEquals(false, parser(listOf("-h", "--help", "--")))
     }
 }
 

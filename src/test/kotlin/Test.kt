@@ -99,7 +99,13 @@ internal class TestBackend {
                                                                        FastString("Третья", "Третья".hashCode()),
                                                                        FastString("Четвертая", "Четвертая".hashCode()),
                                                                        FastString("Пятая", "Пятая".hashCode()),), dataFile(File("text\\test\\3.txt"), mutableListOf())))
+        assertEquals("Файлы совпадают", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
+                                                                       FastString("вторая", "вторая".hashCode()),
+                                                                       FastString("третья", "третья".hashCode()),
+                                                                       FastString("четвертая", "четвертая".hashCode()),
+                                                                       FastString("пятая", "пятая".hashCode()),), dataFile(File("text\\test\\3.txt"), mutableListOf({this.toLowerCase()}))))
     }
+
 
     @Test
     fun testdiff() {
@@ -112,5 +118,11 @@ internal class TestBackend {
         assertEquals(ANSI_RED + "-- a \n" + ANSI_RESET + "== b \n" + ANSI_GREEN + "++ a \n" + ANSI_RESET,
             diff(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
                  mutableListOf(FastString("b", "b".hashCode()), FastString("a", "a".hashCode()))))
+        assertEquals("== b \n" + ANSI_RED + "-- b \n" + ANSI_RESET + ANSI_GREEN + "++ a \n" + ANSI_RESET,
+            diff(mutableListOf(FastString("b", "b".hashCode()), FastString("b", "b".hashCode())),
+                mutableListOf(FastString("b", "b".hashCode()), FastString("a", "a".hashCode()))))
+        assertEquals(ANSI_RED + "-- a \n" + ANSI_RESET + "== b \n" + ANSI_GREEN + "++ b \n" + ANSI_RESET,
+            diff(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
+                mutableListOf(FastString("b", "b".hashCode()), FastString("b", "b".hashCode()))))
     }
 }

@@ -18,7 +18,6 @@ enum class Output {
 // Опции предобработки строки.
 val space : String.() -> String = {  this.trim() }
 val ignore : String.() -> String = {  this.toLowerCase() }
-
 // Разбирает аргументы командной строки и реализует выбор дальнейшего сценария работы.
 fun parser(args : List<String>) : Boolean {
     // вход и выход по умолчанию

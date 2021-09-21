@@ -29,7 +29,8 @@ enum class Message {
     INVALID_EXTENSION, // неправильное расширение
     ERROR_READ, // зпрещено чтение
     ERROR_LOGIC, // ошибка при сопостовлении аргументов
-    DIFF_FILE // сравниваемые файлы
+    DIFF_FILE, // сравниваемые файлы
+    WORK_TIME // время работы
 }
 
 /**
@@ -39,10 +40,10 @@ enum class Message {
  */
 fun report(message: Message, obj : Any = "") {
     when (message) {
-        Message.INVALID_ARGUMENTS -> println("Ошибка в аргументах ${obj}.")
-        Message.MISSING_FILE -> println("Нет файла ${obj}.")
-        Message.INVALID_EXTENSION -> println("Неверное расширение ${obj}.")
-        Message.ERROR_READ -> println("Ошибка на чтение ${obj}.")
+        Message.INVALID_ARGUMENTS -> println("Ошибка в аргументах $obj.")
+        Message.MISSING_FILE -> println("Нет файла $obj.")
+        Message.INVALID_EXTENSION -> println("Неверное расширение $obj.")
+        Message.ERROR_READ -> println("Ошибка на чтение $obj.")
         Message.ERROR_LOGIC -> println("Произошла ошибка при обработке аргументов.")
         Message.DIFF_FILE -> {
             if (obj is List<*> && obj.size == 2) {
@@ -51,6 +52,7 @@ fun report(message: Message, obj : Any = "") {
                 println("Вывод")
             }
         }
+        Message.WORK_TIME -> println("Время работы составило $obj мс.")
     }
 }
 

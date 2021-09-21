@@ -1,4 +1,8 @@
-// Пакет реализует различные сценарии работы с пользователем и предобработку переданных данных.
+/**
+ * Пакет для общения с пользователем.
+ *
+ * Реализует различные сценарии и их выбор.
+ */
 package frontend
 
 // Стандартная библиотека.
@@ -9,7 +13,11 @@ import backend.*
 import parser.*
 import  style.*
 
-// Проверка адекватности переданного файла(существования, расширения и прав доступа).
+/**
+ * Функция проверки файла.
+ *
+ * Проверяет существования, расширение и доступ на чтение.
+ */
 fun checkFile(file : File) : Boolean {
     if (!file.exists()) {
         report(Message.MISSING_FILE, file.absolutePath)
@@ -26,7 +34,11 @@ fun checkFile(file : File) : Boolean {
     return true
 }
 
-// Считывает строки из файла и предобрабатывает их.
+/**
+ * Функция чтения данных из файла.
+ *
+ * Построчно считывает и предобрабатывает строки файла.
+ */
 fun dataFile(file : File,options : MutableList<String.() -> String>) : MutableList<FastString> {
     val textFile = MutableList(0) { FastString("", "".hashCode()) }
     for (line in file.readLines()) {
@@ -39,14 +51,15 @@ fun dataFile(file : File,options : MutableList<String.() -> String>) : MutableLi
     return textFile
 }
 
-// Разбор случаев(верный, покрыт тестами).
+/**
+ * Функция выбора сценария.
+ *
+ * Проверяет распарсенный вход на адекватность и запускает нужный сценарий.
+ */
 fun distributionInput(arguments: Arguments) : Boolean{
-    // Переданные вход и выход
     val input = arguments.input
     val output = arguments.output
-    // Переданные опции предобработки
     val options = arguments.options
-    // Переданные пути до файлов
     val pathFile1 = arguments.paths[0]
     val pathFile2 = arguments.paths[1]
     when (input) {
@@ -90,13 +103,16 @@ fun distributionInput(arguments: Arguments) : Boolean{
     return true
 }
 
-// Ввод имен файлов сравнения через аргументы командной строки.
+/**
+ * Функция работы с командной строкой.
+ *
+ * Считывает имена файлов из командной строки.
+ */
 fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, options: MutableList<String.() -> String>) : Boolean{
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
         report(Message.DIFF_FILE, listOf(file1.name, file2.name))
-        //message(file1, file2)
         val textFile1 = dataFile(file1, options)
         val textFile2 = dataFile(file2, options)
         if (brief)
@@ -108,7 +124,11 @@ fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, op
         return false
 }
 
-// Ввод имен файлов сравнения из консоли.
+/**
+ * Функция работы с консолью.
+ *
+ * Считывает имена файлов из консоли.
+ */
 fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : Boolean {
     val pathFile1 = readLine()
     val pathFile2 = readLine()
@@ -132,7 +152,11 @@ fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : 
     }
 }
 
-// Обрабатывает каждую строку файла, как аргументы командной строки.
+/**
+ * Функция для файлового ввода.
+ *
+ * Обрабатывает каждую строку файла, как аргументы отдельного вызова утилиты.
+ */
 fun inputFile(pathFile : String) : Boolean{
     val buf = File(pathFile)
     if (checkFile(buf)) {

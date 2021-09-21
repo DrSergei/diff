@@ -1,4 +1,8 @@
-// Пакет реализует основной и быстрый алгоритм сравнения. Также вспомогательные функции и дата-класс для хранения данных
+/**
+ * Пакет для логики сравнения.
+ *
+ * Пакет реализует основной и быстрый алгоритм сравнения. Также вспомогательные функции и дата-класс для хранения данных
+  */
 package backend
 
 // Стандартная библиотека.
@@ -6,10 +10,18 @@ package backend
 // Собственные пакеты.
 import style.*
 
-// Данные.
+/**
+ * Класс для хранения строки.
+ *
+ * Нужен для быстрого их сравнения.
+  */
 data class FastString(val data : String, val hash : Int)
 
-// Функция сравнения строк.
+/**
+ * Функция быстрого сравнения.
+ *
+ * Использует хэши для предварительного сравнения.
+ */
 fun equals(str1 : FastString, str2 : FastString) : Boolean {
     if (str1.hash != str2.hash)
         return false
@@ -17,8 +29,12 @@ fun equals(str1 : FastString, str2 : FastString) : Boolean {
         return str1.data == str2.data
 }
 
-// Строит таблицу для рассчета расстаяния Леванштейна через рекуррентную формулу,
-// рассчитывая все с учетом стоимости каждой операции(добавить возможность корректирования стоимости операции).
+/**
+ * Функция для построения таблицы для расстояния Леванштенйна.
+ *
+ * Строит таблицу для рассчета расстаяния Леванштейна через рекуррентную формулу,
+ * рассчитывая все с учетом стоимости каждой операции.
+ */
 fun createTable(textFile1 : MutableList<FastString>, textFile2 : MutableList<FastString>) : MutableList<MutableList<Int>> {
     val table: MutableList<MutableList<Int>> = MutableList(textFile1.size + 1) { MutableList(textFile2.size + 1) { it } }
     for (i in 0..textFile1.size)
@@ -35,8 +51,11 @@ fun createTable(textFile1 : MutableList<FastString>, textFile2 : MutableList<Fas
     return table
 }
 
-// Функция построения пути(редакционного предписания).
-// Смотрит с конца на состояние с учетом цен и того что замены быть не может, восстанавливая наиболее выгодный ход.
+/**
+ * Функция построения редакционного предписания по таблице.
+ *
+ * Смотрит с конца на состояние с учетом цен и того что замены быть не может, восстанавливая наиболее выгодный ход.
+ */
 fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<FastString>, textFile2 : MutableList<FastString>) : List<String> {
     var row = textFile1.size
     var column = textFile2.size
@@ -90,7 +109,11 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
     return emptyList()
 }
 
-// Главная функция сравнения, связывает две предыдущие.
+/**
+ * Главная функция сравнения.
+ *
+ * Соединяет остальные функции между собой.
+ */
 fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     try {
         val buf = createPath(createTable(textFile1, textFile2), textFile1, textFile2)
@@ -101,7 +124,11 @@ fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>
 }
 
 
-// Быстрое построчное сравнений.
+/**
+ * Функция быстрого сравнения.
+ *
+ * Сравнивает размера, а затем построчно файдлы.
+ */
 fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     if (textFile1.size == textFile2.size) {
         if (textFile1 == textFile2)

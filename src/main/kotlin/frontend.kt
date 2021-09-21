@@ -23,7 +23,7 @@ fun checkFile(file : File) : Boolean {
         report(Message.MISSING_FILE, file.absolutePath)
         return false
     }
-    if (file.extension != "txt") {
+    if (file.extension == "exe") {
         report(Message.INVALID_EXTENSION, file.name)
         return false
     }
@@ -39,7 +39,7 @@ fun checkFile(file : File) : Boolean {
  *
  * Построчно считывает и предобрабатывает строки файла.
  */
-fun dataFile(file : File,options : MutableList<String.() -> String>) : MutableList<FastString> {
+fun dataFile(file : File,options : List<String.() -> String>) : MutableList<FastString> {
     val textFile = MutableList(0) { FastString("", "".hashCode()) }
     for (line in file.readLines()) {
         var str = line
@@ -64,16 +64,23 @@ fun distributionInput(arguments: Arguments) : Boolean{
     val pathFile2 = arguments.paths[1]
     when (input) {
         Input.NULL -> {
-            println("Справка")
-            println("Утилита предназначена для сравнения файлов")
-            println("Ключи -h или --help вызов справки")
-            println("Ключи -q или --brief быстрая проверка на совпадение")
-            println("Ключи -f или --file ввод аргументов командной строки из файла")
-            println("Ключи -c или --console ввод файлов из консоли")
-            println("Ключи -s или --space убирают пробелы в начале строки")
-            println("Ключи -i или --ignore не учитывают регистр строки")
-            println("Ключ -- конец ввода опций")
-            println("Утилита предназначена для сравнения двух текстовых файлов")
+            when(output) {
+                Output.HELP -> {
+                    println("Справка")
+                    println("Утилита предназначена для сравнения файлов")
+                    println("Ключи -h или --help вызов справки")
+                    println("Ключи -q или --brief быстрая проверка на совпадение")
+                    println("Ключи -f или --file ввод аргументов командной строки из файла")
+                    println("Ключи -c или --console ввод файлов из консоли")
+                    println("Ключи -s или --space убирают пробелы в начале строки")
+                    println("Ключи -i или --ignore не учитывают регистр строки")
+                    println("Ключ -- конец ввода опций")
+                    println("Утилита предназначена для сравнения двух текстовых файлов")
+                }
+                Output.BRIEF -> return false
+                Output.DIFF -> return false
+                Output.NULL -> return false
+            }
         }
         Input.CONSOLE -> {
             when (output) {
@@ -108,7 +115,7 @@ fun distributionInput(arguments: Arguments) : Boolean{
  *
  * Считывает имена файлов из командной строки.
  */
-fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, options: MutableList<String.() -> String>) : Boolean{
+fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, options: List<String.() -> String>) : Boolean{
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
@@ -129,7 +136,7 @@ fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, op
  *
  * Считывает имена файлов из консоли.
  */
-fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : Boolean {
+fun inputConsole(brief : Boolean, options : List<String.() -> String>) : Boolean {
     val pathFile1 = readLine()
     val pathFile2 = readLine()
     if (pathFile1 != null && pathFile2 != null) {

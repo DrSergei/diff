@@ -33,7 +33,7 @@ enum class Output {
  *
  * Используется для передачи их внутри программы.
  */
-data class Arguments(val input: Input, val output: Output, val options : MutableList<String.() -> String>, val paths : List<String>)
+data class Arguments(val input: Input, val output: Output, val options : List<String.() -> String>, val paths : List<String>)
 
 /**
  * Вспомогательные функции.
@@ -154,5 +154,5 @@ fun parser(args : List<String>) : Arguments? {
             }
         }
     }
-    return Arguments(input, output, options, listOf(pathFile1, pathFile2))
+    return Arguments(input, output, options.toList(), listOf(pathFile1, pathFile2))
 }

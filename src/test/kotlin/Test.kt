@@ -35,11 +35,11 @@ internal class TestFrontend {
         assertEquals(true, checkFile(File("text\\test\\2.txt")))
         assertEquals(true, checkFile(File("text\\test\\3.txt")))
         assertEquals(false, checkFile(File("abc")))
-        assertEquals(false, checkFile(File("README.MD")))
+        assertEquals(true, checkFile(File("README.MD")))
         assertEquals(false, checkFile(File("xxx")))
-        assertEquals(false, checkFile(File("gradlew.bat")))
-        assertEquals(false, checkFile(File("Test.kt")))
-        assertEquals(false, checkFile(File("main.kt")))
+        assertEquals(true, checkFile(File("gradlew.bat")))
+        assertEquals(true, checkFile(File("src\\test\\kotlin\\Test.kt")))
+        assertEquals(true, checkFile(File("src\\main\\kotlin\\main.kt")))
     }
 
     @Test
@@ -59,6 +59,15 @@ internal class TestFrontend {
                                    FastString("Третья", "Третья".hashCode()),
                                    FastString("Четвертая", "Четвертая".hashCode()),
                                    FastString("Пятая", "Пятая".hashCode()),), dataFile(File("text\\test\\3.txt"), mutableListOf()))
+    }
+
+    @Test
+    fun testistributionInput() {
+        assertEquals(false, distributionInput(Arguments(Input.FILE, Output.BRIEF, mutableListOf(), listOf("",""))))
+        assertEquals(true, distributionInput(Arguments(Input.COMMANDLINE, Output.BRIEF, mutableListOf(), listOf("",""))))
+        assertEquals(false, distributionInput(Arguments(Input.NULL, Output.BRIEF, mutableListOf(), listOf("",""))))
+        assertEquals(false, distributionInput(Arguments(Input.FILE, Output.DIFF, mutableListOf(), listOf("",""))))
+        assertEquals(false, distributionInput(Arguments(Input.CONSOLE, Output.HELP, mutableListOf(), listOf("",""))))
     }
 }
 

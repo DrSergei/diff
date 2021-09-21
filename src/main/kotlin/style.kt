@@ -41,8 +41,8 @@ enum class Message {
 fun report(message: Message, obj : Any = "") {
     when (message) {
         Message.INVALID_ARGUMENTS -> println("Ошибка в аргументах $obj.")
-        Message.MISSING_FILE -> println("Нет файла $obj.")
-        Message.INVALID_EXTENSION -> println("Неверное расширение $obj.")
+        Message.MISSING_FILE -> println("Нет файла или директории $obj.")
+        Message.INVALID_EXTENSION -> println("Не файл $obj.")
         Message.ERROR_READ -> println("Ошибка на чтение $obj.")
         Message.ERROR_LOGIC -> println("Произошла ошибка при обработке аргументов.")
         Message.DIFF_FILE -> {

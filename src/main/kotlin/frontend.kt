@@ -7,19 +7,20 @@ import java.io.File
 // Собственные пакеты.
 import backend.*
 import parser.*
+import  style.*
 
 // Проверка адекватности переданного файла(существования, расширения и прав доступа).
 fun checkFile(file : File) : Boolean {
     if (!file.exists()) {
-        println("Нет файла ${file.absolutePath}")
+        report(Message.MISSING_FILE, file.absolutePath)
         return false
     }
     if (file.extension != "txt") {
-        println("${file.name} не текстовый файл")
+        report(Message.INVALID_EXTENSION, file.name)
         return false
     }
     if (!file.canRead()) {
-        println("${file.name} не может быть прочитан")
+        report(Message.ERROR_READ, file.name)
         return false
     }
     return true
@@ -36,13 +37,6 @@ fun dataFile(file : File,options : MutableList<String.() -> String>) : MutableLi
         textFile.add(FastString(str, str.hashCode()))
     }
     return textFile
-}
-
-// Служебное сообщение.
-fun message(file1: File, file2 : File) {
-    println(ANSI_RED + "-- " + file1.name + ANSI_RESET)
-    println(ANSI_GREEN + "++ " + file2.name + ANSI_RESET)
-    println("Вывод")
 }
 
 // Разбор случаев(верный, покрыт тестами).
@@ -101,7 +95,8 @@ fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, op
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
-        message(file1, file2)
+        report(Message.DIFF_FILE, listOf(file1.name, file2.name))
+        //message(file1, file2)
         val textFile1 = dataFile(file1, options)
         val textFile2 = dataFile(file2, options)
         if (brief)
@@ -121,7 +116,7 @@ fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : 
         val file1 = File(pathFile1)
         val file2 = File(pathFile2)
         if (checkFile(file1) && checkFile(file2)) {
-            message(file1, file2)
+            report(Message.DIFF_FILE, listOf(file1.name, file2.name))
             val textFile1 = dataFile(file1, options)
             val textFile2 = dataFile(file2, options)
             if (brief)
@@ -132,7 +127,7 @@ fun inputConsole(brief : Boolean, options : MutableList<String.() -> String>) : 
         } else
             return false
     } else {
-        println("Не получены пути до файлов")
+        report(Message.ERROR_LOGIC)
         return false
     }
 }
@@ -145,10 +140,10 @@ fun inputFile(pathFile : String) : Boolean{
         for(line in buf.readLines()) {
             val arguments = parser(line.split(" "))
             if (arguments == null)
-                println("")
+                report(Message.ERROR_LOGIC)
             else
                 if (!distributionInput(arguments))
-                    println("Неверные аргументы")
+                    report(Message.ERROR_LOGIC)
         }
     } else
         return false

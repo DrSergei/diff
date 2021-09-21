@@ -7,6 +7,7 @@ import kotlin.system.measureTimeMillis
 
 // Собственные пакеты
 import parser.*
+import style.*
 
 fun main(args: Array<String>) {
     val time = measureTimeMillis {
@@ -14,13 +15,13 @@ fun main(args: Array<String>) {
             // Предобработка аргументов командной строки
             val arguments = parser(args.toList())
             if (arguments == null)
-                println("Неверные аргменты")
+                report(Message.ERROR_LOGIC)
             else
                 // Проверка логичности ввода аргументов
                 if (!distributionInput(arguments))
-                    println("Неверные аргументы")
+                    report(Message.ERROR_LOGIC)
         } catch (e : Exception) {
-            println("Произошла ошибка")
+            report(Message.ERROR_LOGIC)
         }
     }
     println("Время работы составило $time мс")

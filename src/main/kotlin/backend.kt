@@ -4,11 +4,7 @@ package backend
 // Стандартная библиотека.
 
 // Собственные пакеты.
-
-// Стили вывода.
-const val ANSI_RESET = "\u001B[0m"
-const val ANSI_RED = "\u001B[31m"
-const val ANSI_GREEN = "\u001B[32m"
+import style.*
 
 // Данные.
 data class FastString(val data : String, val hash : Int)
@@ -96,14 +92,14 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
 
 // Главная функция сравнения, связывает две предыдущие.
 fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
-    val buf = try {
-         createPath(createTable(textFile1, textFile2), textFile1, textFile2)
+    try {
+        val buf = createPath(createTable(textFile1, textFile2), textFile1, textFile2)
+        return buf.joinToString("")
     } catch (e : Exception) {
-        println("Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти")
-        return ""
+        return "Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти"
     }
-    return buf.joinToString("")
 }
+
 
 // Быстрое построчное сравнений.
 fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {

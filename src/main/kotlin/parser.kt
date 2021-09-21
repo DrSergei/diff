@@ -4,6 +4,7 @@ package parser
 // Стандартная библиотека.
 
 // Собственные пакеты.
+import style.*
 
 // Перечисления сценариев ввода и вывода для парсера.
 enum class Input {
@@ -123,7 +124,7 @@ fun parser(args : List<String>) : Arguments? {
                     return null
             }
             else -> { // обработка неверных аргументов
-                println("Неверный аргумент ${args[index]}")
+                report(Message.INVALID_ARGUMENTS, args[index])
                 return null
             }
         }

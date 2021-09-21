@@ -8,21 +8,22 @@ import java.io.*
 import frontend.*
 import backend.*
 import parser.*
+import style.*
 
 internal class TestParser {
 
     @Test
     fun testparser() {
-        assertEquals(false, parser(listOf("-f", "--brief", "--help", "--", "text\\test\\1.txt")))
-        assertEquals(true, parser(listOf("-h", "--",)))
-        assertEquals(true, parser(listOf("--brief", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(listOf("--file", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(false, parser(listOf("--help", "-i", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(listOf("--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(listOf("-q", "--space","--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(true, parser(listOf("--ignore", "-s", "-q", "--", "text\\test\\1.txt", "text\\test\\2.txt")))
-        assertEquals(false, parser(listOf("-f", "-help", "--", "text\\test\\1.txt", "text\\test\\3.txt")))
-        assertEquals(false, parser(listOf("-h", "--help", "--")))
+        assertEquals(false, parser(listOf("-f", "--brief", "--help", "--", "text\\test\\1.txt")) != null)
+        assertEquals(true, parser(listOf("-h", "--",)) != null)
+        assertEquals(true, parser(listOf("--brief", "--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(true, parser(listOf("--file", "--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(false, parser(listOf("--help", "-i", "--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(true, parser(listOf("--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(true, parser(listOf("-q", "--space","--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(true, parser(listOf("--ignore", "-s", "-q", "--", "text\\test\\1.txt", "text\\test\\2.txt")) != null)
+        assertEquals(false, parser(listOf("-f", "-help", "--", "text\\test\\1.txt", "text\\test\\3.txt")) != null)
+        assertEquals(false, parser(listOf("-h", "--help", "--")) != null)
     }
 }
 

@@ -12,6 +12,7 @@ import java.io.File
 import backend.*
 import parser.*
 import  style.*
+import java.util.*
 
 /**
  * Функция проверки файла.
@@ -57,45 +58,38 @@ fun dataFile(file : File,options : List<String.() -> String>) : MutableList<Fast
  * Проверяет распарсенный вход на адекватность и запускает нужный сценарий.
  */
 fun distributionInput(arguments: Arguments) : Boolean{
+    // разбор данных(для удобства использования)
     val input = arguments.input
     val output = arguments.output
     val options = arguments.options
-    val pathFile1 = arguments.paths[0]
-    val pathFile2 = arguments.paths[1]
+    val pathFile1 = arguments.pathFile1
+    val pathFile2 = arguments.pathFile2
     when (input) {
         Input.NULL -> {
             when(output) {
-                Output.HELP -> {
-                    println("Справка")
-                    println("Утилита предназначена для сравнения файлов")
-                    println("Ключи -h или --help вызов справки")
-                    println("Ключи -q или --brief быстрая проверка на совпадение")
-                    println("Ключи -f или --file ввод аргументов командной строки из файла")
-                    println("Ключи -c или --console ввод файлов из консоли")
-                    println("Ключи -s или --space убирают пробелы в начале строки")
-                    println("Ключи -i или --ignore не учитывают регистр строки")
-                    println("Ключ -- конец ввода опций")
-                    println("Утилита предназначена для сравнения двух текстовых файлов")
-                }
+                Output.HELP -> report(Message.HELP_INFO)
                 Output.BRIEF -> return false
                 Output.DIFF -> return false
                 Output.NULL -> return false
+                Output.DISTANCE -> return false
             }
         }
         Input.CONSOLE -> {
             when (output) {
                 Output.HELP -> return false
-                Output.BRIEF -> inputConsole(true, options)
-                Output.DIFF -> inputConsole(false, options)
+                Output.BRIEF -> inputConsole( options, brief = true, distance = false)
+                Output.DIFF -> inputConsole( options, brief = false, distance = false)
                 Output.NULL -> return false
+                Output.DISTANCE -> inputConsole( options, brief = false, distance = true)
             }
         }
         Input.COMMANDLINE ->{
             when (output) {
                 Output.HELP -> return false
-                Output.BRIEF -> inputCommandLine(true, pathFile1, pathFile2, options)
-                Output.DIFF -> inputCommandLine(false, pathFile1, pathFile2, options)
+                Output.BRIEF -> inputCommandLine(pathFile1, pathFile2, options, brief = true, distance = false)
+                Output.DIFF -> inputCommandLine(pathFile1, pathFile2, options, brief = false, distance = false)
                 Output.NULL -> return false
+                Output.DISTANCE -> inputCommandLine(pathFile1, pathFile2, options, brief = false, distance = true)
             }
         }
         Input.FILE -> {
@@ -104,6 +98,7 @@ fun distributionInput(arguments: Arguments) : Boolean{
                 Output.BRIEF -> return false
                 Output.DIFF -> return false
                 Output.NULL -> inputFile(pathFile1)
+                Output.DISTANCE -> return false
             }
         }
     }
@@ -115,17 +110,18 @@ fun distributionInput(arguments: Arguments) : Boolean{
  *
  * Считывает имена файлов из командной строки.
  */
-fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, options: List<String.() -> String>) : Boolean{
+fun inputCommandLine(pathFile1 : String, pathFile2 : String, options: List<String.() -> String> = listOf(), brief : Boolean = false, distance : Boolean = false) : Boolean{
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
-        report(Message.DIFF_FILE, listOf(file1.name, file2.name))
+        report(Message.DIFF_FILE, listOf(file1.name +" " + Date(file1.lastModified()), file2.name + " " + Date(file1.lastModified())))
         val textFile1 = dataFile(file1, options)
         val textFile2 = dataFile(file2, options)
-        if (brief)
-            println(diffFast(textFile1, textFile2))
-        else
-            println(diff(textFile1, textFile2))
+        when {
+            brief -> println(diffFast(textFile1, textFile2))
+            distance -> println(distanceLevenshtein(textFile1,textFile2))
+            else -> println(diff(textFile1, textFile2))
+        }
         return true
     } else
         return false
@@ -136,7 +132,7 @@ fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, op
  *
  * Считывает имена файлов из консоли.
  */
-fun inputConsole(brief : Boolean, options : List<String.() -> String>) : Boolean {
+fun inputConsole(options : List<String.() -> String> = listOf(), brief : Boolean = false, distance: Boolean = false) : Boolean {
     val pathFile1 = readLine()
     val pathFile2 = readLine()
     if (pathFile1 != null && pathFile2 != null) {
@@ -146,10 +142,11 @@ fun inputConsole(brief : Boolean, options : List<String.() -> String>) : Boolean
             report(Message.DIFF_FILE, listOf(file1.name, file2.name))
             val textFile1 = dataFile(file1, options)
             val textFile2 = dataFile(file2, options)
-            if (brief)
-                println(diffFast(textFile1, textFile2))
-            else
-                println(diff(textFile1, textFile2))
+            when {
+                brief -> println(diffFast(textFile1, textFile2))
+                distance -> println(distanceLevenshtein(textFile1,textFile2))
+                else -> println(diff(textFile1, textFile2))
+            }
             return true
         } else
             return false

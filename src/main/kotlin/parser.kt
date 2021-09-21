@@ -25,7 +25,7 @@ enum class Input {
  * Используются для представлении логики вывода.
  */
 enum class Output {
-    NULL, HELP, BRIEF, DIFF
+    NULL, HELP, BRIEF, DIFF, DISTANCE
 }
 
 /**
@@ -33,7 +33,7 @@ enum class Output {
  *
  * Используется для передачи их внутри программы.
  */
-data class Arguments(val input: Input, val output: Output, val options : List<String.() -> String>, val paths : List<String>)
+data class Arguments(val input: Input, val output: Output, val options : List<String.() -> String>, val pathFile1 : String, val pathFile2: String)
 
 /**
  * Вспомогательные функции.
@@ -108,6 +108,18 @@ fun parser(args : List<String>) : Arguments? {
                 else
                     return null
             }
+            "-d" -> { // вывод схожести файлов(расстояние Леванштейна)
+                if (output == Output.DIFF && input != Input.NULL && input != Input.FILE)
+                    output = Output.DISTANCE
+                else
+                    return null
+            }
+            "--distance" -> { // вывод схожести файлов(расстояние Леванштейна)
+                if (output == Output.DIFF && input != Input.NULL && input != Input.FILE)
+                    output = Output.DISTANCE
+                else
+                    return null
+            }
             "-q" -> { // вывод только сравнения(быстрый режим)
                 if (output == Output.DIFF && input != Input.NULL && input != Input.FILE)
                     output = Output.BRIEF
@@ -154,5 +166,5 @@ fun parser(args : List<String>) : Arguments? {
             }
         }
     }
-    return Arguments(input, output, options.toList(), listOf(pathFile1, pathFile2))
+    return Arguments(input, output, options.toList(), pathFile1, pathFile2)
 }

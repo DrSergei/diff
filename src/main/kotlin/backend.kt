@@ -60,20 +60,24 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
     var row = textFile1.size
     var column = textFile2.size
     val result = mutableListOf("")
+    val statistics = mutableListOf(0, 0, 0) // счетчик добавленнах, удаленных и сохраненных строк.
     while ((row != 0) && (column != 0)) {
         // Рассмотрение случая совпадения значений или нет т.к. у нас нет замена, а только вставки и удаления, выбираем потом наименьший.
         if (equals(textFile1[row - 1], textFile2[column - 1])) {
             when {
                 table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1]) -> {
                     result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
+                    statistics[0]++
                     column--
                 }
                 table[row - 1][column] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1, table[row - 1][column - 1]) -> {
                     result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
+                    statistics[1]++
                     row--
                 }
                 else -> {
                     result.add("== ${textFile1[row - 1].data} \n")
+                    statistics[2]++
                     row--
                     column--
                 }
@@ -82,10 +86,12 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
             when {
                 table[row][column - 1] + 1 == minOf(table[row - 1][column] + 1, table[row][column - 1] + 1) -> {
                     result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
+                    statistics[0]++
                     column--
                 }
                 else -> {
                     result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
+                    statistics[1]++
                     row--
                 }
             }
@@ -95,15 +101,23 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
     if (row == 0) {
         while (column != 0) {
             result.add(ANSI_GREEN + "++ ${textFile2[column - 1].data} \n" + ANSI_RESET)
+            statistics[0]++
             column--
         }
+        result.addAll(listOf("Сохранено строк: ${statistics[2]} \n",
+            ANSI_RED + "Удалено строк: ${statistics[1]} \n" + ANSI_RESET,
+            ANSI_GREEN + "Добавлено строк: ${statistics[0]} \n" + ANSI_RESET))
         return result.reversed() // так как с конца надо развернуть
     }
     if (column == 0) {
         while (row != 0) {
             result.add(ANSI_RED + "-- ${textFile1[row - 1].data} \n" + ANSI_RESET)
+            statistics[1]++
             row--
         }
+        result.addAll(listOf("Сохранено строк: ${statistics[2]} \n",
+            ANSI_RED + "Удалено строк: ${statistics[1]} \n" + ANSI_RESET,
+            ANSI_GREEN + "Добавлено строк: ${statistics[0]} \n" + ANSI_RESET))
         return result.reversed() // так как с конца надо развернуть
     }
     return emptyList()
@@ -137,4 +151,17 @@ fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastStr
             return "Файлы различны"
     } else
         return "Файлы различны"
+}
+
+/**
+ * Функция рассчета расстояния Леванштейна.
+ *
+ * Обертка над функцией createTable.
+ */
+fun distanceLevenshtein(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
+    try {
+        return "Расстаяние Леванштейна между файлами: ${createTable(textFile1, textFile2).last().last()}"
+    } catch (e : Exception) {
+        return "Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти"
+    }
 }

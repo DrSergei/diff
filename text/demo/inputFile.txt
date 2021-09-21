@@ -2,3 +2,5 @@
 -q -- text\demo\inputFirst.txt text\demo\inputSecond.txt
 -- text\demo\inputFirst.txt text\demo\inputSecond.txt
 -- text\demo\main.c text\demo\main.cpp
+-d -- text\demo\main.c text\demo\main.cpp
+--help --

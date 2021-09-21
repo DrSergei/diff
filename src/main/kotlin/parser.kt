@@ -4,7 +4,6 @@ package parser
 // Стандартная библиотека.
 
 // Собственные пакеты.
-import frontend.*
 
 // Перечисления сценариев ввода и вывода для парсера.
 enum class Input {
@@ -15,11 +14,15 @@ enum class Output {
     NULL, HELP, BRIEF, DIFF
 }
 
+// Класс для хранения аргументов переданных пользователем.
+data class Arguments(val input: Input, val output: Output, val options : MutableList<String.() -> String>, val paths : List<String>)
+
 // Опции предобработки строки.
 val space : String.() -> String = {  this.trim() }
 val ignore : String.() -> String = {  this.toLowerCase() }
+
 // Разбирает аргументы командной строки и реализует выбор дальнейшего сценария работы.
-fun parser(args : List<String>) : Boolean {
+fun parser(args : List<String>) : Arguments? {
     // вход и выход по умолчанию
     var input = Input.COMMANDLINE
     var output = Output.DIFF
@@ -35,34 +38,33 @@ fun parser(args : List<String>) : Boolean {
                 if (index + 2 < args.size) {
                     pathFile1 = args[index + 1]
                     pathFile2 = args[index + 2]
-                } else if (index + 1 < args.size) {
+                } else if (index + 1 < args.size)
                     pathFile1 = args[index + 1]
-                }
                 break
             }
             "-i" -> { // не учитывать регистр
                 if ((output == Output.DIFF || output == Output.BRIEF) && input != Input.FILE && input != Input.NULL)
                     options.add(ignore)
                 else
-                    return false
+                    return null
             }
             "--ignore" -> { // не учитывать регистр
                 if ((output == Output.DIFF || output == Output.BRIEF) && input != Input.FILE && input != Input.NULL)
                     options.add(ignore)
                 else
-                    return false
+                    return null
             }
             "-s" -> { // отбрасывать ведущие пробелы
                 if ((output == Output.DIFF || output == Output.BRIEF) && input != Input.FILE && input != Input.NULL)
                     options.add(space)
                 else
-                    return false
+                    return null
             }
             "--space" -> { // отбрасывать ведущие пробелы
                 if ((output == Output.DIFF || output == Output.BRIEF) && input != Input.FILE && input != Input.NULL)
                     options.add(space)
                 else
-                    return false
+                    return null
             }
             "-h" -> { // вызов справки
                 if (output == Output.DIFF && input == Input.COMMANDLINE && options.isEmpty()) {
@@ -70,7 +72,7 @@ fun parser(args : List<String>) : Boolean {
                     input = Input.NULL
                 }
                 else
-                    return false
+                    return null
             }
             "--help" -> { // вызов справки
                 if (output == Output.DIFF && input == Input.COMMANDLINE && options.isEmpty()) {
@@ -78,19 +80,19 @@ fun parser(args : List<String>) : Boolean {
                     input = Input.NULL
                 }
                 else
-                    return false
+                    return null
             }
             "-q" -> { // вывод только сравнения(быстрый режим)
                 if (output == Output.DIFF && input != Input.NULL && input != Input.FILE)
                     output = Output.BRIEF
                 else
-                    return false
+                    return null
             }
             "--brief" -> { // вывод только сравнения(быстрый режим)
                 if (output == Output.DIFF && input != Input.NULL && input != Input.FILE)
                     output = Output.BRIEF
                 else
-                    return false
+                    return null
             }
             "-f" -> { // ввод из файла
                 if (input == Input.COMMANDLINE && output == Output.DIFF && options.isEmpty()) {
@@ -98,7 +100,7 @@ fun parser(args : List<String>) : Boolean {
                     output = Output.NULL
                 }
                 else
-                    return false
+                    return null
             }
             "--file" -> { // ввод из файла
                 if (input == Input.COMMANDLINE && output == Output.DIFF && options.isEmpty()) {
@@ -106,64 +108,25 @@ fun parser(args : List<String>) : Boolean {
                     output = Output.NULL
                 }
                 else
-                    return false
+                    return null
             }
             "-c" -> { // ввод с консоли
                 if (input == Input.COMMANDLINE && output != Output.HELP)
                     input = Input.CONSOLE
                 else
-                    return false
+                    return null
             }
             "--console" -> { // ввод с консоли
                 if (input == Input.COMMANDLINE && output != Output.HELP)
                     input = Input.CONSOLE
                 else
-                    return false
+                    return null
             }
             else -> { // обработка неверных аргументов
                 println("Неверный аргумент ${args[index]}")
-                return false
+                return null
             }
         }
     }
-    // Разбор случаев(верный, покрыт тестами).
-    when (input) {
-        Input.NULL -> {
-            println("Справка")
-            println("Утилита предназначена для сравнения файлов")
-            println("Ключи -h или --help вызов справки")
-            println("Ключи -q или --brief быстрая проверка на совпадение")
-            println("Ключи -f или --file ввод аргументов командной строки из файла")
-            println("Ключи -c или --console ввод файлов из консоли")
-            println("Ключи -s или --space убирают пробелы в начале строки")
-            println("Ключи -i или --ignore не учитывают регистр строки")
-            println("Ключ -- конец ввода опций")
-            println("Утилита предназначена для сравнения двух текстовых файлов")
-        }
-        Input.CONSOLE -> {
-            when (output) {
-                Output.HELP -> return false
-                Output.BRIEF -> inputConsole(true, options)
-                Output.DIFF -> inputConsole(false, options)
-                Output.NULL -> return false
-            }
-        }
-        Input.COMMANDLINE ->{
-            when (output) {
-                Output.HELP -> return false
-                Output.BRIEF -> inputCommandLine(true, pathFile1, pathFile2, options)
-                Output.DIFF -> inputCommandLine(false, pathFile1, pathFile2, options)
-                Output.NULL -> return false
-            }
-        }
-        Input.FILE -> {
-            when (output) {
-                Output.HELP -> return false
-                Output.BRIEF -> return false
-                Output.DIFF -> return false
-                Output.NULL -> inputFile(pathFile1)
-            }
-        }
-    }
-    return true
+    return Arguments(input, output, options, listOf(pathFile1, pathFile2))
 }

@@ -45,6 +45,57 @@ fun message(file1: File, file2 : File) {
     println("Вывод")
 }
 
+// Разбор случаев(верный, покрыт тестами).
+fun distributionInput(arguments: Arguments) : Boolean{
+    // Переданные вход и выход
+    val input = arguments.input
+    val output = arguments.output
+    // Переданные опции предобработки
+    val options = arguments.options
+    // Переданные пути до файлов
+    val pathFile1 = arguments.paths[0]
+    val pathFile2 = arguments.paths[1]
+    when (input) {
+        Input.NULL -> {
+            println("Справка")
+            println("Утилита предназначена для сравнения файлов")
+            println("Ключи -h или --help вызов справки")
+            println("Ключи -q или --brief быстрая проверка на совпадение")
+            println("Ключи -f или --file ввод аргументов командной строки из файла")
+            println("Ключи -c или --console ввод файлов из консоли")
+            println("Ключи -s или --space убирают пробелы в начале строки")
+            println("Ключи -i или --ignore не учитывают регистр строки")
+            println("Ключ -- конец ввода опций")
+            println("Утилита предназначена для сравнения двух текстовых файлов")
+        }
+        Input.CONSOLE -> {
+            when (output) {
+                Output.HELP -> return false
+                Output.BRIEF -> inputConsole(true, options)
+                Output.DIFF -> inputConsole(false, options)
+                Output.NULL -> return false
+            }
+        }
+        Input.COMMANDLINE ->{
+            when (output) {
+                Output.HELP -> return false
+                Output.BRIEF -> inputCommandLine(true, pathFile1, pathFile2, options)
+                Output.DIFF -> inputCommandLine(false, pathFile1, pathFile2, options)
+                Output.NULL -> return false
+            }
+        }
+        Input.FILE -> {
+            when (output) {
+                Output.HELP -> return false
+                Output.BRIEF -> return false
+                Output.DIFF -> return false
+                Output.NULL -> inputFile(pathFile1)
+            }
+        }
+    }
+    return true
+}
+
 // Ввод имен файлов сравнения через аргументы командной строки.
 fun inputCommandLine(brief : Boolean, pathFile1 : String, pathFile2 : String, options: MutableList<String.() -> String>) : Boolean{
     val file1 = File(pathFile1)
@@ -92,8 +143,12 @@ fun inputFile(pathFile : String) : Boolean{
     if (checkFile(buf)) {
         // Построчно запускает парсер.
         for(line in buf.readLines()) {
-            if (!parser(line.split(" ")))
-                return false
+            val arguments = parser(line.split(" "))
+            if (arguments == null)
+                println("")
+            else
+                if (!distributionInput(arguments))
+                    println("Неверные аргументы")
         }
     } else
         return false

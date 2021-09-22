@@ -89,27 +89,27 @@ internal class TestBackend {
 
     @Test
     fun testdiffFast() {
-        assertEquals("Файлы совпадают", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
+        assertEquals("Файлы совпадают: true.", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
                                                                        FastString("вторая", "вторая".hashCode()),
                                                                        FastString("третья", "третья".hashCode()),
                                                                        FastString("четвертая", "четвертая".hashCode()),
                                                                        FastString("пятая", "пятая".hashCode()),), dataFile(File("text\\test\\2.txt"), mutableListOf())))
-        assertEquals("Файлы различны", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
+        assertEquals("Файлы совпадают: false.", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
                                                                       FastString("первая", "первая".hashCode()),
                                                                       FastString("третья", "третья".hashCode()),
                                                                       FastString("четвертая", "четвертая".hashCode()),
                                                                       FastString("пятая", "пятая".hashCode()),), dataFile(File("text\\test\\2.txt"), mutableListOf())))
-        assertEquals("Файлы различны", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
+        assertEquals("Файлы совпадают: false.", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
                                                                       FastString("вторая", "вторая".hashCode()),
                                                                       FastString("третья", "третья".hashCode()),
                                                                       FastString("четвертая", "четвертая".hashCode()),
                                                                       FastString("шестая", "шестая".hashCode()),), dataFile(File("text\\test\\1.txt"), mutableListOf())))
-        assertEquals("Файлы совпадают", diffFast(mutableListOf(FastString("Первая", "Первая".hashCode()),
+        assertEquals("Файлы совпадают: true.", diffFast(mutableListOf(FastString("Первая", "Первая".hashCode()),
                                                                        FastString("Вторая", "Вторая".hashCode()),
                                                                        FastString("Третья", "Третья".hashCode()),
                                                                        FastString("Четвертая", "Четвертая".hashCode()),
                                                                        FastString("Пятая", "Пятая".hashCode()),), dataFile(File("text\\test\\3.txt"), mutableListOf())))
-        assertEquals("Файлы совпадают", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
+        assertEquals("Файлы совпадают: true.", diffFast(mutableListOf(FastString("первая", "первая".hashCode()),
                                                                        FastString("вторая", "вторая".hashCode()),
                                                                        FastString("третья", "третья".hashCode()),
                                                                        FastString("четвертая", "четвертая".hashCode()),
@@ -160,15 +160,15 @@ internal class TestBackend {
 
     @Test
     fun testdistanceLevenshtein() {
-        assertEquals("Расстаяние Леванштейна между файлами: 2", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
+        assertEquals("Расстаяние Леванштейна между файлами: 2.", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
             mutableListOf(FastString("b", "b".hashCode()), FastString("b", "b".hashCode()))))
-        assertEquals("Расстаяние Леванштейна между файлами: 2", distanceLevenshtein(mutableListOf(FastString("b", "b".hashCode()), FastString("b", "b".hashCode())),
+        assertEquals("Расстаяние Леванштейна между файлами: 2.", distanceLevenshtein(mutableListOf(FastString("b", "b".hashCode()), FastString("b", "b".hashCode())),
             mutableListOf(FastString("b", "b".hashCode()), FastString("a", "a".hashCode()))))
-        assertEquals("Расстаяние Леванштейна между файлами: 2", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
+        assertEquals("Расстаяние Леванштейна между файлами: 2.", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode()), FastString("b", "b".hashCode())),
             mutableListOf(FastString("b", "b".hashCode()), FastString("a", "a".hashCode()))))
-        assertEquals("Расстаяние Леванштейна между файлами: 0", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode())),
+        assertEquals("Расстаяние Леванштейна между файлами: 0.", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode())),
             mutableListOf(FastString("a", "a".hashCode()))))
-        assertEquals("Расстаяние Леванштейна между файлами: 2", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode())),
+        assertEquals("Расстаяние Леванштейна между файлами: 2.", distanceLevenshtein(mutableListOf(FastString("a", "a".hashCode())),
             mutableListOf(FastString("b", "b".hashCode()))))
 
     }
@@ -184,6 +184,6 @@ internal class TestStyle {
 
     @Test
     fun testmessage() {
-        assertEquals(true, Message.values().size == 8)
+        assertEquals(true, Message.values().size == 12)
     }
 }

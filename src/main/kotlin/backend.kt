@@ -131,9 +131,9 @@ fun createPath(table : MutableList<MutableList<Int>>, textFile1 : MutableList<Fa
 fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     try {
         val buf = createPath(createTable(textFile1, textFile2), textFile1, textFile2)
-        return buf.joinToString("")
+        return report(Message.DIFF_INFO, buf.joinToString("", "", ""))
     } catch (e : Exception) {
-        return "Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти"
+        return report(Message.FATAL_ERROR)
     }
 }
 
@@ -146,11 +146,11 @@ fun diff(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>
 fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     if (textFile1.size == textFile2.size) {
         if (textFile1 == textFile2)
-            return "Файлы совпадают"
+            return report(Message.BRIEF_INFO, true.toString())
         else
-            return "Файлы различны"
+            return report(Message.BRIEF_INFO, false.toString())
     } else
-        return "Файлы различны"
+        return report(Message.BRIEF_INFO, false.toString())
 }
 
 /**
@@ -160,8 +160,8 @@ fun diffFast(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastStr
  */
 fun distanceLevenshtein(textFile1 : MutableList<FastString>, textFile2 :MutableList<FastString>) : String {
     try {
-        return "Расстаяние Леванштейна между файлами: ${createTable(textFile1, textFile2).last().last()}"
+        return report(Message.DISTANCE_INFO, createTable(textFile1, textFile2).last().last().toString())
     } catch (e : Exception) {
-        return "Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти"
+        return report(Message.FATAL_ERROR)
     }
 }

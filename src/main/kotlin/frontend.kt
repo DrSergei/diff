@@ -21,15 +21,15 @@ import java.util.*
  */
 fun checkFile(file : File) : Boolean {
     if (!file.exists()) {
-        report(Message.MISSING_FILE, file.absolutePath)
+        println(report(Message.MISSING_FILE, file.absolutePath))
         return false
     }
     if (file.extension == "exe") {
-        report(Message.INVALID_EXTENSION, file.name)
+        println(report(Message.INVALID_EXTENSION, file.name))
         return false
     }
     if (!file.canRead()) {
-        report(Message.ERROR_READ, file.name)
+        println(report(Message.ERROR_READ, file.name))
         return false
     }
     return true
@@ -114,7 +114,7 @@ fun inputCommandLine(pathFile1 : String, pathFile2 : String, options: List<Strin
     val file1 = File(pathFile1)
     val file2 = File(pathFile2)
     if (checkFile(file1) && checkFile(file2)) {
-        report(Message.DIFF_FILE, listOf(file1.name +" " + Date(file1.lastModified()), file2.name + " " + Date(file1.lastModified())))
+        println(report(Message.DIFF_FILE, listOf(file1.name +" " + Date(file1.lastModified()), file2.name + " " + Date(file1.lastModified()))))
         val textFile1 = dataFile(file1, options)
         val textFile2 = dataFile(file2, options)
         when {
@@ -123,8 +123,10 @@ fun inputCommandLine(pathFile1 : String, pathFile2 : String, options: List<Strin
             else -> println(diff(textFile1, textFile2))
         }
         return true
-    } else
+    } else {
+        println(report(Message.ERROR_LOGIC))
         return false
+    }
 }
 
 /**
@@ -139,7 +141,7 @@ fun inputConsole(options : List<String.() -> String> = listOf(), brief : Boolean
         val file1 = File(pathFile1)
         val file2 = File(pathFile2)
         if (checkFile(file1) && checkFile(file2)) {
-            report(Message.DIFF_FILE, listOf(file1.name, file2.name))
+            println(report(Message.DIFF_FILE, listOf(file1.name +" " + Date(file1.lastModified()), file2.name + " " + Date(file1.lastModified()))))
             val textFile1 = dataFile(file1, options)
             val textFile2 = dataFile(file2, options)
             when {
@@ -151,7 +153,7 @@ fun inputConsole(options : List<String.() -> String> = listOf(), brief : Boolean
         } else
             return false
     } else {
-        report(Message.ERROR_LOGIC)
+        println(report(Message.ERROR_LOGIC))
         return false
     }
 }
@@ -168,10 +170,10 @@ fun inputFile(pathFile : String) : Boolean{
         for(line in buf.readLines()) {
             val arguments = parser(line.split(" "))
             if (arguments == null)
-                report(Message.ERROR_LOGIC)
+                println(report(Message.ERROR_LOGIC))
             else
                 if (!distributionInput(arguments))
-                    report(Message.ERROR_LOGIC)
+                    println(report(Message.ERROR_LOGIC))
         }
     } else
         return false

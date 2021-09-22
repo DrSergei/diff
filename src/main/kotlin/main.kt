@@ -1,5 +1,3 @@
-// Главный файл и входная точка
-
 // Стандартная библиотека
 import frontend.distributionInput
 import java.lang.Exception
@@ -15,14 +13,14 @@ fun main(args: Array<String>) {
             // Парсинг аргументов командной строки
             val arguments = parser(args.toList())
             if (arguments == null)
-                report(Message.ERROR_LOGIC)
+                println(report(Message.ERROR_LOGIC))
             else
                 // Проверка логичности ввода аргументов и запуск сценариев
                 if (!distributionInput(arguments))
-                    report(Message.ERROR_LOGIC)
+                    println(report(Message.ERROR_LOGIC))
         } catch (e : Exception) {
-            report(Message.ERROR_LOGIC)
+            println(report(Message.ERROR_LOGIC))
         }
     }
-    report(Message.WORK_TIME, time)
+    println(report(Message.WORK_TIME, time))
 }

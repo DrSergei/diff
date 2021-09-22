@@ -161,7 +161,7 @@ fun parser(args : List<String>) : Arguments? {
                     return null
             }
             else -> { // обработка неверных аргументов
-                report(Message.INVALID_ARGUMENTS, args[index])
+                println(report(Message.INVALID_ARGUMENTS, args[index]))
                 return null
             }
         }

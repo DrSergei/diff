@@ -7,12 +7,12 @@ package frontend
 
 // Стандартная библиотека.
 import java.io.File
+import java.util.*
 
 // Собственные пакеты.
 import backend.*
 import parser.*
 import  style.*
-import java.util.*
 
 /**
  * Функция проверки файла.

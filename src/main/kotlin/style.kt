@@ -41,7 +41,7 @@ enum class Message {
 /**
  * Служебная функция.
  *
- * Информирует пользователя об ошибках.
+ * Информирует пользователя об ошибках и результатах работы.
  */
 fun report(message: Message, obj: Any = ""): String {
     // Узнает регион пользователя и выбирает нужную локализацию
@@ -55,7 +55,7 @@ fun report(message: Message, obj: Any = ""): String {
             Message.ERROR_LOGIC -> return "Произошла ошибка при обработке аргументов."
             Message.DIFF_FILE -> {
                 if (obj is List<*> && obj.size == 2) {
-                    return ANSI_RED + "-- " + "${obj.first()}" + ANSI_RESET + "\n" + ANSI_GREEN + "${obj.last()}" + ANSI_RESET + "\n" + "Вывод"
+                    return ANSI_RED + "-- " + "${obj.first()}" + ANSI_RESET + "\n" + ANSI_GREEN + "++ " + "${obj.last()}" + ANSI_RESET + "\n" + "Вывод"
                 }
             }
             Message.WORK_TIME -> return "Время работы составило $obj мс."
@@ -64,7 +64,7 @@ fun report(message: Message, obj: Any = ""): String {
                         "утилита предназначена для сравнения файлов" + "\n" +
                         "Ключи -h или --help вызов справки" + "\n" +
                         "Ключи -q или --brief быстрая проверка на совпадение" + "\n" +
-                        "Ключи -d или --distance вывод расстояния Леванштейна для файлов мера похожести " + "\n" +
+                        "Ключи -d или --distance вывод расстояния Левенштейна для файлов мера похожести " + "\n" +
                         "Ключи -f или --file ввод аргументов командной строки из файла" + "\n" +
                         "Ключи -c или --console ввод файлов из консоли" + "\n" +
                         "Ключи -s или --space убирают пробелы в начале строки" + "\n" +
@@ -75,7 +75,7 @@ fun report(message: Message, obj: Any = ""): String {
             Message.FATAL_ERROR -> return "Скорее всего произошел выход из массива при расчете редакционного предписания, маловероятны проблемы с выделением пямяти."
             Message.DIFF_INFO -> return "$obj"
             Message.BRIEF_INFO -> return "Файлы совпадают: $obj."
-            Message.DISTANCE_INFO -> return "Расстаяние Леванштейна между файлами: $obj."
+            Message.DISTANCE_INFO -> return "Расстаяние Левенштейна между файлами: $obj."
         }
     } else {
         when (message) {
@@ -86,7 +86,7 @@ fun report(message: Message, obj: Any = ""): String {
             Message.ERROR_LOGIC -> return "An error occurred while processing arguments."
             Message.DIFF_FILE -> {
                 if (obj is List<*> && obj.size == 2) {
-                    return ANSI_RED + "-- " + "${obj.first()}" + ANSI_RESET + "\n" + ANSI_GREEN + "${obj.last()}" + ANSI_RESET + "\n" + "Output"
+                    return ANSI_RED + "-- " + "${obj.first()}" + ANSI_RESET + "\n" + ANSI_GREEN + "++ " + "${obj.last()}" + ANSI_RESET + "\n" + "Output"
                 }
             }
             Message.WORK_TIME -> return "Working time was $obj ms."

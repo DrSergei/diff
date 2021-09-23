@@ -164,7 +164,7 @@ fun diffFast(textFile1: MutableList<FastString>, textFile2: MutableList<FastStri
 }
 
 /**
- * Функция рассчета расстояния Леванштейна.
+ * Функция рассчета расстояния Левенштейна.
  *
  * Обертка над функцией createTable.
  */

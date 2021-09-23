@@ -1,11 +1,11 @@
 // Стандартная библиотека
-import frontend.distributionInput
 import java.lang.Exception
 import kotlin.system.measureTimeMillis
 
 // Собственные пакеты
 import parser.*
 import style.*
+import frontend.*
 
 fun main(args: Array<String>) {
     val time = measureTimeMillis {
@@ -15,10 +15,10 @@ fun main(args: Array<String>) {
             if (arguments == null)
                 println(report(Message.ERROR_LOGIC))
             else
-                // Проверка логичности ввода аргументов и запуск сценариев
+            // Проверка логичности ввода аргументов и запуск сценариев
                 if (!distributionInput(arguments))
                     println(report(Message.ERROR_LOGIC))
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             println(report(Message.ERROR_LOGIC))
         }
     }

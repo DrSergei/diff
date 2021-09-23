@@ -33,22 +33,28 @@ enum class Output {
  *
  * Используется для передачи их внутри программы.
  */
-data class Arguments(val input: Input, val output: Output, val options : List<String.() -> String>, val pathFile1 : String, val pathFile2: String)
+data class Arguments(
+    val input: Input,
+    val output: Output,
+    val options: List<String.() -> String>,
+    val pathFile1: String,
+    val pathFile2: String,
+)
 
 /**
  * Вспомогательные функции.
  *
  * Используются для предобработки ввода.
  */
-val space : String.() -> String = {  this.trim() }
-val ignore : String.() -> String = {  this.toLowerCase() }
+val space: String.() -> String = { this.trim() }
+val ignore: String.() -> String = { this.toLowerCase() }
 
 /**
  * Функция парсер.
  *
  * Проверяет, классифицирует и преобразует аргументы командной строки для дальнейшего использования.
  */
-fun parser(args : List<String>) : Arguments? {
+fun parser(args: List<String>): Arguments? {
     // вход и выход по умолчанию
     var input = Input.COMMANDLINE
     var output = Output.DIFF
@@ -96,16 +102,14 @@ fun parser(args : List<String>) : Arguments? {
                 if (output == Output.DIFF && input == Input.COMMANDLINE && options.isEmpty()) {
                     output = Output.HELP
                     input = Input.NULL
-                }
-                else
+                } else
                     return null
             }
             "--help" -> { // вызов справки
                 if (output == Output.DIFF && input == Input.COMMANDLINE && options.isEmpty()) {
                     output = Output.HELP
                     input = Input.NULL
-                }
-                else
+                } else
                     return null
             }
             "-d" -> { // вывод схожести файлов(расстояние Леванштейна)
@@ -136,16 +140,14 @@ fun parser(args : List<String>) : Arguments? {
                 if (input == Input.COMMANDLINE && output == Output.DIFF && options.isEmpty()) {
                     input = Input.FILE
                     output = Output.NULL
-                }
-                else
+                } else
                     return null
             }
             "--file" -> { // ввод из файла
                 if (input == Input.COMMANDLINE && output == Output.DIFF && options.isEmpty()) {
                     input = Input.FILE
                     output = Output.NULL
-                }
-                else
+                } else
                     return null
             }
             "-c" -> { // ввод с консоли
